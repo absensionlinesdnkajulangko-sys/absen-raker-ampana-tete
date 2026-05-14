@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { User, ClipboardList, Building2, Send, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
+import { User, ClipboardList, Building2, Send, CheckCircle2, AlertCircle, Loader2, MapPin } from 'lucide-react';
 import { SignaturePad } from './SignaturePad';
 import { submitAttendance, AttendanceData } from '../services/api';
 import { clsx, type ClassValue } from 'clsx';
@@ -10,8 +10,12 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbzxJ4iNcvcB99fI-JG8uAYM8w6UxMpm_I3nnTAlx-0ciIWq-zoAivoiwZepZxsf-7fW/exec"; // User manual input later
-const SECRET_KEY = "AMPANA_TETE_ACCESS_2024"; // Simple pre-shared key for security
+// --- PENGATURAN LOKASI (Ganti lat & lng sesuai lokasi acara) ---
+const TARGET_COORDS = { lat: -0.8354, lng: 121.4333 }; 
+const MAX_DISTANCE_METERS = 100; 
+
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzxJ4iNcvcB99fI-JG8uAYM8w6UxMpm_I3nnTAlx-0ciIWq-zoAivoiwZepZxsf-7fW/exec";
+const SECRET_KEY = "AMPANA_TETE_ACCESS_2024";
 
 export const AttendanceForm: React.FC = () => {
   const [formData, setFormData] = useState<Omit<AttendanceData, 'signature'>>({
@@ -25,6 +29,18 @@ export const AttendanceForm: React.FC = () => {
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
 
+  // Fungsi Hitung Jarak
+  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+    const R = 6371e3; 
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -32,6 +48,8 @@ export const AttendanceForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setStatus('submitting');
+    setErrorMsg('');
     
     if (!signature) {
       setErrorMsg('Tanda tangan wajib diisi');
@@ -39,22 +57,38 @@ export const AttendanceForm: React.FC = () => {
       return;
     }
 
-    setStatus('submitting');
-    setErrorMsg('');
-
-    try {
-      if (GAS_URL === "YOUR_GAS_WEB_APP_URL") {
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        setStatus('success');
-      } else {
-        // Send with secret key for verification
-        await submitAttendance(GAS_URL, { ...formData, signature, accessKey: SECRET_KEY } as any);
-        setStatus('success');
-      }
-    } catch (err) {
+    if (!navigator.geolocation) {
+      setErrorMsg('Browser Anda tidak mendukung fitur lokasi.');
       setStatus('error');
-      setErrorMsg('Gagal mengirim absensi. Pastikan URL Google Apps Script sudah benar.');
+      return;
     }
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const userLat = position.coords.latitude;
+        const userLng = position.coords.longitude;
+        const distance = calculateDistance(userLat, userLng, TARGET_COORDS.lat, TARGET_COORDS.lng);
+
+        if (distance > MAX_DISTANCE_METERS) {
+          setErrorMsg(`Gagal: Lokasi Anda terlalu jauh (${Math.round(distance)}m). Batas maksimal adalah ${MAX_DISTANCE_METERS}m.`);
+          setStatus('error');
+          return;
+        }
+
+        try {
+          await submitAttendance(GAS_URL, { ...formData, signature, accessKey: SECRET_KEY } as any);
+          setStatus('success');
+        } catch (err) {
+          setStatus('error');
+          setErrorMsg('Terjadi kesalahan saat mengirim data ke server.');
+        }
+      },
+      (error) => {
+        setStatus('error');
+        setErrorMsg('Harap aktifkan GPS dan izinkan akses lokasi di browser Anda.');
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
   };
 
   if (status === 'success') {
@@ -88,12 +122,20 @@ export const AttendanceForm: React.FC = () => {
       className="space-y-8 bg-white/95 backdrop-blur-xl p-8 rounded-[2.5rem] border border-white shadow-2xl shadow-lime-900/5"
       onSubmit={handleSubmit}
     >
+      {/* Logo Section */}
+      <div className="flex flex-col items-center justify-center mb-2">
+        <img src="/logo-instansi.png" alt="Logo" className="h-16 w-auto mb-2" />
+        <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-100 rounded-full text-blue-700 text-[10px] font-bold uppercase tracking-wider">
+          <MapPin size={12} />
+          Area Terverifikasi (Radius {MAX_DISTANCE_METERS}m)
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Name Input */}
         <div className="space-y-2 group">
           <label className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-400 group-focus-within:text-lime-600 transition-colors">
             <User size={14} className="group-focus-within:text-lime-500" />
-            Nama Lengkap (wajib di isi)
+            Nama Lengkap (Wajib)
           </label>
           <input
             required
@@ -106,11 +148,10 @@ export const AttendanceForm: React.FC = () => {
           />
         </div>
 
-        {/* NIP Input */}
         <div className="space-y-2 group">
           <label className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-400 group-focus-within:text-lime-600 transition-colors">
             <ClipboardList size={14} className="group-focus-within:text-lime-500" />
-            NIP (tidak wajib di isi)
+            NIP (Opsional)
           </label>
           <input
             type="text"
@@ -122,11 +163,10 @@ export const AttendanceForm: React.FC = () => {
           />
         </div>
 
-        {/* Jabatan Input */}
         <div className="space-y-2 group">
           <label className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-400 group-focus-within:text-lime-600 transition-colors">
             <Building2 size={14} className="group-focus-within:text-lime-500" />
-            Jabatan (wajib di isi)
+            Jabatan (Wajib)
           </label>
           <input
             required
@@ -139,11 +179,10 @@ export const AttendanceForm: React.FC = () => {
           />
         </div>
 
-        {/* Instansi Input */}
         <div className="space-y-2 group">
           <label className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-400 group-focus-within:text-lime-600 transition-colors">
             <Building2 size={14} className="group-focus-within:text-lime-500" />
-            Nama Instansi (wajib di isi)
+            Nama Instansi (Wajib)
           </label>
           <input
             required
@@ -189,7 +228,7 @@ export const AttendanceForm: React.FC = () => {
         {status === 'submitting' ? (
           <>
             <Loader2 size={20} className="animate-spin" />
-            Sedang Mengirim...
+            Memverifikasi Jarak...
           </>
         ) : (
           <>
@@ -198,12 +237,6 @@ export const AttendanceForm: React.FC = () => {
           </>
         )}
       </button>
-      
-      {GAS_URL === "YOUR_GAS_WEB_APP_URL" && (
-        <p className="text-center text-[10px] text-slate-400 uppercase tracking-widest px-4">
-          Mode Preview: Silakan masukkan URL Google Apps Script untuk integrasi penuh.
-        </p>
-      )}
     </motion.form>
   );
 };
