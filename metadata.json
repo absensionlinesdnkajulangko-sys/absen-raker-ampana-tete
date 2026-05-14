@@ -1,0 +1,8 @@
+{
+  "name": "Absensi Raker Pendidikan Ampana Tete",
+  "description": "Aplikasi absensi modern dan aman untuk Rapat Kerja Pendidikan Wilayah Kecamatan Ampana Tete dengan integrasi Google Sheets.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
