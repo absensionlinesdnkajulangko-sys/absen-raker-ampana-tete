@@ -11,12 +11,12 @@ function cn(...inputs: ClassValue[]) {
 }
 
 // --- PENGATURAN LOKASI (Ganti lat & lng sesuai lokasi acara) ---
-const TARGET_COORDS = { lat: -0.907224, lng: 121.585542 }; 
+const TARGET_COORDS = { lat: -1.2919019, lng: 122.0120972 }; 
 const MAX_DISTANCE_METERS = 200; 
 
 // --- PENGATURAN WAKTU (WITA - UTC+8) ---
-const START_HOUR = 1;  // Contoh: Mulai jam 07:00 WITA
-const END_HOUR = 23;   // Contoh: Berakhir jam 17:00 WITA
+const START_HOUR = 13;  // Contoh: Mulai jam 07:00 WITA
+const END_HOUR = 18;   // Contoh: Berakhir jam 17:00 WITA
 
 const GAS_URL = "https://script.google.com/macros/s/AKfycbwsaEwCIHCJ2vy8j5FZqNfYRWhfCczdzcQN0gIaVDm8kURcSbL_TMCZe6Y_JEpuTe24/exec";
 const SECRET_KEY = "AMPANA_TETE_ACCESS_2024";
