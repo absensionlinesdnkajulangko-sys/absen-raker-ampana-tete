@@ -26,7 +26,11 @@ export default function App() {
             className="w-24 h-24 bg-white rounded-[2rem] shadow-2xl shadow-lime-500/20 flex items-center justify-center text-lime-500 mb-2 border-4 border-lime-50 relative overflow-hidden"
           >
             <div className="absolute inset-0 bg-linear-to-br from-lime-400/10 to-yellow-400/10" />
-            <GraduationCap size={44} strokeWidth={2.5} className="relative z-10" />
+            <img 
+              src="/touna.png" 
+              alt="Logo Instansi" 
+              className="w-16 h-16 object-contain relative z-10" 
+            />
           </motion.div>
           
           <div className="space-y-6">
@@ -70,7 +74,7 @@ export default function App() {
         <footer className="mt-16 text-center space-y-4">
           <div className="h-px w-12 bg-slate-200 mx-auto" />
           <p className="text-[10px] text-slate-400 font-medium uppercase tracking-[0.2em]">
-            &copy; 2024 Dinas Pendidikan - Sektor Ampana Tete
+            &copy; {new Date().getFullYear()} Dikbud Tojo Una-Una
           </p>
         </footer>
       </main>
