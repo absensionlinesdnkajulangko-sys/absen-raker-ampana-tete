@@ -122,9 +122,6 @@ export const AttendanceForm: React.FC = () => {
       className="space-y-8 bg-white/95 backdrop-blur-xl p-8 rounded-[2.5rem] border border-white shadow-2xl shadow-lime-900/5"
       onSubmit={handleSubmit}
     >
-      {/* Logo Section */}
-      <div className="flex flex-col items-center justify-center mb-2">
-        <img src="touna.png" alt="Logo" className="h-16 w-auto mb-2" />
         <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-100 rounded-full text-blue-700 text-[10px] font-bold uppercase tracking-wider">
           <MapPin size={12} />
           Area Terverifikasi (Radius {MAX_DISTANCE_METERS}m)
