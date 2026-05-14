@@ -13,10 +13,13 @@
 const SECRET_KEY = "AMPANA_TETE_ACCESS_2024";
 
 function doPost(e) {
+  // Gunakan LockService untuk mencegah data bentrok jika banyak yang absen bersamaan
+  const lock = LockService.getScriptLock();
   try {
+    lock.waitLock(10000); // Tunggu maksimal 10 detik jika sheet sedang sibuk
+
     const data = JSON.parse(e.postData.contents);
     
-    // Keamanan: Validasi Access Key
     if (data.accessKey !== SECRET_KEY) {
       return ContentService.createTextOutput(JSON.stringify({ "status": "error", "message": "Unauthorized access" }))
         .setMimeType(ContentService.MimeType.JSON);
@@ -26,7 +29,6 @@ function doPost(e) {
     const sheetName = data.sheetName || "Respon Absen";
     let sheet = ss.getSheetByName(sheetName);
 
-    // Buat sheet jika belum ada
     if (!sheet) {
       sheet = ss.insertSheet(sheetName);
       sheet.appendRow(["Timestamp", "Nama Lengkap", "NIP", "Jabatan", "Nama Instansi", "Tanda Tangan"]);
@@ -35,19 +37,17 @@ function doPost(e) {
 
     const timestamp = new Date();
     
-    // Simpan tanda tangan (Sebagai data URL di kolom F)
-    // Catatan: Jika tanda tangan terlalu besar, sel Google Sheet mungkin terbatas.
-    // Disarankan untuk menyimpan ke Google Drive jika aplikasi digunakan secara masif.
     const row = [
       timestamp,
       data.namaLengkap,
       data.nip || "-",
       data.jabatan,
       data.namaInstansi,
-      data.signature
+      TAMPILKAN_TTD(data.signature) // Memproses Base64 menjadi gambar
     ];
 
     sheet.appendRow(row);
+    sheet.setRowHeight(sheet.getLastRow(), 60); // Membuat baris lebih lega untuk TTD
 
     return ContentService.createTextOutput(JSON.stringify({ "status": "success" }))
       .setMimeType(ContentService.MimeType.JSON);
@@ -55,10 +55,27 @@ function doPost(e) {
   } catch (error) {
     return ContentService.createTextOutput(JSON.stringify({ "status": "error", "message": error.toString() }))
       .setMimeType(ContentService.MimeType.JSON);
+  } finally {
+    lock.releaseLock(); // Lepas kunci setelah selesai
   }
 }
 
-// Fungsi untuk mengizinkan akses CORS
 function doGet(e) {
   return ContentService.createTextOutput("GAS Service is Online.");
+}
+
+// JANGAN LUPA: Fungsi ini harus tetap ada di bawah skrip Anda
+function TAMPILKAN_TTD(base64String) {
+  if (!base64String || typeof base64String !== 'string') return "";
+  try {
+    var cleanString = base64String.replace(/\s/g, '');
+    if (cleanString.indexOf(',') > -1) {
+      cleanString = cleanString.split(',')[1];
+    }
+    return SpreadsheetApp.newCellImage()
+      .setSourceUrl("data:image/png;base64," + cleanString)
+      .build();
+  } catch (e) {
+    return "Gagal memproses gambar";
+  }
 }
