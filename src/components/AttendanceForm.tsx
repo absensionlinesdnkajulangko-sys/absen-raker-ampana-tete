@@ -14,6 +14,10 @@ function cn(...inputs: ClassValue[]) {
 const TARGET_COORDS = { lat: -1.2919019, lng: 122.0120972 }; 
 const MAX_DISTANCE_METERS = 200; 
 
+// --- PENGATURAN WAKTU (WITA - UTC+8) ---
+const START_HOUR = 14;  // Contoh: Mulai jam 07:00 WITA
+const END_HOUR = 18;   // Contoh: Berakhir jam 17:00 WITA
+
 const GAS_URL = "https://script.google.com/macros/s/AKfycbzxJ4iNcvcB99fI-JG8uAYM8w6UxMpm_I3nnTAlx-0ciIWq-zoAivoiwZepZxsf-7fW/exec";
 const SECRET_KEY = "AMPANA_TETE_ACCESS_2024";
 
@@ -29,6 +33,17 @@ export const AttendanceForm: React.FC = () => {
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
 
+  // Fungsi Cek Waktu WITA
+  const isTimeValid = () => {
+    // Ambil waktu UTC saat ini dan konversi ke WITA (UTC+8)
+    const now = new Date();
+    const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000);
+    const witaTime = new Date(utcTime + (3600000 * 8));
+    const currentHour = witaTime.getHours();
+
+    return currentHour >= START_HOUR && currentHour < END_HOUR;
+  };
+  
   // Fungsi Hitung Jarak
   const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
     const R = 6371e3; 
@@ -50,6 +65,13 @@ export const AttendanceForm: React.FC = () => {
     e.preventDefault();
     setStatus('submitting');
     setErrorMsg('');
+
+    // 1. Verifikasi Waktu Pertama
+    if (!isTimeValid()) {
+      setErrorMsg(`Maaf, absensi akan aktif pukul ${START_HOUR.toString().padStart(2, '0')}:00 - ${END_HOUR}:00 WITA.`);
+      setStatus('error');
+      return;
+    }
     
     if (!signature) {
       setErrorMsg('Tanda tangan wajib diisi');
@@ -63,6 +85,7 @@ export const AttendanceForm: React.FC = () => {
       return;
     }
 
+// 2. Verifikasi Lokasi
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const userLat = position.coords.latitude;
@@ -226,7 +249,7 @@ export const AttendanceForm: React.FC = () => {
         {status === 'submitting' ? (
           <>
             <Loader2 size={20} className="animate-spin" />
-            Memverifikasi Jarak...
+            Sedang Memproses...
           </>
         ) : (
           <>
