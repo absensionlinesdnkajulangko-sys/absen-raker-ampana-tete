@@ -70,7 +70,7 @@ export const AttendanceForm: React.FC = () => {
         const distance = calculateDistance(userLat, userLng, TARGET_COORDS.lat, TARGET_COORDS.lng);
 
         if (distance > MAX_DISTANCE_METERS) {
-          setErrorMsg(`Gagal: Lokasi Anda terlalu jauh (${Math.round(distance)}m). Batas maksimal adalah ${MAX_DISTANCE_METERS}m.`);
+          setErrorMsg(`Maaf.. Datang Rapat Lea... (${Math.round(distance)}m). Batas maksimal adalah ${MAX_DISTANCE_METERS}m.`);
           setStatus('error');
           return;
         }
