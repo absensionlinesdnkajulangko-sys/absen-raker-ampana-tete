@@ -10,7 +10,7 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-const GAS_URL = "YOUR_GAS_WEB_APP_URL"; // User manual input later
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzxJ4iNcvcB99fI-JG8uAYM8w6UxMpm_I3nnTAlx-0ciIWq-zoAivoiwZepZxsf-7fW/exec"; // User manual input later
 const SECRET_KEY = "AMPANA_TETE_ACCESS_2024"; // Simple pre-shared key for security
 
 export const AttendanceForm: React.FC = () => {
