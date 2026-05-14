@@ -1,23 +1,11 @@
-/* 
-  KODE GOOGLE APPS SCRIPT (GAS) - PROFESSIONAL EDITION
-  ---------------------------------------------------
-  GITHUB INTEGRATION:
-  Untuk manajemen project profesional, Anda disarankan:
-  1. Pasang ekstensi Chrome "Google Apps Script GitHub Assistant".
-  2. Repository: Simpan file ini dengan nama 'GAS_CODE.js' di root repo Anda.
-  3. CI/CD: Gunakan 'clasp' dari Google jika ingin deploy via terminal (Command Line).
-
-  PENGATURAN SPREADSHEET:
-*/
-
 const SECRET_KEY = "AMPANA_TETE_ACCESS_2024";
+// PENTING: Ganti ID di bawah ini dengan ID Folder Drive Anda
+const FOLDER_ID = "1x-EREqo8ALwwr67h3l-qU5YtfFljnsek"; 
 
 function doPost(e) {
-  // Gunakan LockService untuk mencegah data bentrok jika banyak yang absen bersamaan
   const lock = LockService.getScriptLock();
   try {
-    lock.waitLock(10000); // Tunggu maksimal 10 detik jika sheet sedang sibuk
-
+    lock.waitLock(10000);
     const data = JSON.parse(e.postData.contents);
     
     if (data.accessKey !== SECRET_KEY) {
@@ -37,17 +25,20 @@ function doPost(e) {
 
     const timestamp = new Date();
     
+    // PROSES GAMBAR: Simpan ke Drive & Ambil URL Thumbnail
+    const ttdImage = PROSES_DAN_SIMPAN_GAMBAR(data.signature, data.namaLengkap);
+
     const row = [
       timestamp,
       data.namaLengkap,
       data.nip || "-",
       data.jabatan,
       data.namaInstansi,
-      TAMPILKAN_TTD(data.signature) // Memproses Base64 menjadi gambar
+      ttdImage
     ];
 
     sheet.appendRow(row);
-    sheet.setRowHeight(sheet.getLastRow(), 60); // Membuat baris lebih lega untuk TTD
+    sheet.setRowHeight(sheet.getLastRow(), 80);
 
     return ContentService.createTextOutput(JSON.stringify({ "status": "success" }))
       .setMimeType(ContentService.MimeType.JSON);
@@ -56,26 +47,36 @@ function doPost(e) {
     return ContentService.createTextOutput(JSON.stringify({ "status": "error", "message": error.toString() }))
       .setMimeType(ContentService.MimeType.JSON);
   } finally {
-    lock.releaseLock(); // Lepas kunci setelah selesai
+    lock.releaseLock();
+  }
+}
+
+function PROSES_DAN_SIMPAN_GAMBAR(base64String, namaUser) {
+  if (!base64String || base64String.length < 50) return "Tanpa TTD";
+  
+  try {
+    // 1. Dekode Base64 menjadi Blob
+    var rawData = base64String.split(',')[1] || base64String;
+    var blob = Utilities.newBlob(Utilities.base64Decode(rawData), "image/png", "TTD_" + namaUser + ".png");
+    
+    // 2. Simpan ke Folder Drive
+    var folder = DriveApp.getFolderById(FOLDER_ID);
+    var file = folder.createFile(blob);
+    
+    // 3. Set izin agar sistem Google Sheet bisa "melihat" file
+    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    
+    // 4. Gunakan URL Thumbnail Drive agar muncul di dalam sel
+    var imageUrl = "https://drive.google.com/thumbnail?id=" + file.getId() + "&sz=w300";
+    
+    return SpreadsheetApp.newCellImage()
+      .setSourceUrl(imageUrl)
+      .build();
+  } catch (e) {
+    return "Gagal simpan gambar: " + e.toString();
   }
 }
 
 function doGet(e) {
   return ContentService.createTextOutput("GAS Service is Online.");
-}
-
-// JANGAN LUPA: Fungsi ini harus tetap ada di bawah skrip Anda
-function TAMPILKAN_TTD(base64String) {
-  if (!base64String || typeof base64String !== 'string') return "";
-  try {
-    var cleanString = base64String.replace(/\s/g, '');
-    if (cleanString.indexOf(',') > -1) {
-      cleanString = cleanString.split(',')[1];
-    }
-    return SpreadsheetApp.newCellImage()
-      .setSourceUrl("data:image/png;base64," + cleanString)
-      .build();
-  } catch (e) {
-    return "Gagal memproses gambar";
-  }
 }
