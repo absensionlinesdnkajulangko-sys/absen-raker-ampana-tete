@@ -126,7 +126,6 @@ export const AttendanceForm: React.FC = () => {
           <MapPin size={12} />
           Area Terverifikasi (Radius {MAX_DISTANCE_METERS}m)
         </div>
-      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="space-y-2 group">
