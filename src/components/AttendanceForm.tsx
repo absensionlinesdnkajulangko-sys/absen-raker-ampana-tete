@@ -11,7 +11,7 @@ function cn(...inputs: ClassValue[]) {
 }
 
 // --- PENGATURAN LOKASI (Ganti lat & lng sesuai lokasi acara) ---
-const TARGET_COORDS = { lat: -1.2919019, lng: 122.0120972 }; 
+const TARGET_COORDS = { lat: -0.907224, lng: 121.585542 }; 
 const MAX_DISTANCE_METERS = 200; 
 
 // --- PENGATURAN WAKTU (WITA - UTC+8) ---
