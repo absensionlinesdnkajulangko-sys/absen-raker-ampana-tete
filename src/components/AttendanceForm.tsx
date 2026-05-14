@@ -11,7 +11,7 @@ function cn(...inputs: ClassValue[]) {
 }
 
 // --- PENGATURAN LOKASI (Ganti lat & lng sesuai lokasi acara) ---
-const TARGET_COORDS = { lat: -0.8354, lng: 121.4333 }; 
+const TARGET_COORDS = { lat: -0.9146964, lng: 121.5858137 }; 
 const MAX_DISTANCE_METERS = 100; 
 
 const GAS_URL = "https://script.google.com/macros/s/AKfycbzxJ4iNcvcB99fI-JG8uAYM8w6UxMpm_I3nnTAlx-0ciIWq-zoAivoiwZepZxsf-7fW/exec";
@@ -124,7 +124,7 @@ export const AttendanceForm: React.FC = () => {
     >
       {/* Logo Section */}
       <div className="flex flex-col items-center justify-center mb-2">
-        <img src="/logo-instansi.png" alt="Logo" className="h-16 w-auto mb-2" />
+        <img src="touna.png" alt="Logo" className="h-16 w-auto mb-2" />
         <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-100 rounded-full text-blue-700 text-[10px] font-bold uppercase tracking-wider">
           <MapPin size={12} />
           Area Terverifikasi (Radius {MAX_DISTANCE_METERS}m)
@@ -143,7 +143,7 @@ export const AttendanceForm: React.FC = () => {
             name="namaLengkap"
             value={formData.namaLengkap}
             onChange={handleInputChange}
-            placeholder="Masukkan nama lengkap"
+            placeholder="Ketik nama lengkap dengan gelar"
             className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-lime-400 focus:bg-white focus:ring-4 focus:ring-lime-400/10 transition-all outline-none"
           />
         </div>
@@ -158,7 +158,7 @@ export const AttendanceForm: React.FC = () => {
             name="nip"
             value={formData.nip}
             onChange={handleInputChange}
-            placeholder="Masukkan NIP"
+            placeholder="Ketik NIP (Jika ada)"
             className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-lime-400 focus:bg-white focus:ring-4 focus:ring-lime-400/10 transition-all outline-none"
           />
         </div>
@@ -174,7 +174,7 @@ export const AttendanceForm: React.FC = () => {
             name="jabatan"
             value={formData.jabatan}
             onChange={handleInputChange}
-            placeholder="Contoh: Kepala Sekolah"
+            placeholder="Ketik Jabatan Anda"
             className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-lime-400 focus:bg-white focus:ring-4 focus:ring-lime-400/10 transition-all outline-none"
           />
         </div>
@@ -190,7 +190,7 @@ export const AttendanceForm: React.FC = () => {
             name="namaInstansi"
             value={formData.namaInstansi}
             onChange={handleInputChange}
-            placeholder="Masukkan nama instansi"
+            placeholder="Ketik nama instansi/Sekolah"
             className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-lime-400 focus:bg-white focus:ring-4 focus:ring-lime-400/10 transition-all outline-none"
           />
         </div>
