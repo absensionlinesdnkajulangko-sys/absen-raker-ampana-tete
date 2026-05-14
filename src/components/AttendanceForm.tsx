@@ -18,7 +18,7 @@ const MAX_DISTANCE_METERS = 200;
 const START_HOUR = 1;  // Contoh: Mulai jam 07:00 WITA
 const END_HOUR = 23;   // Contoh: Berakhir jam 17:00 WITA
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwOIvxQD5bB_jr3NRcEcJjrq0WC0iWsQ7m0e87KncZdEpHpT0obUHbUGlx3FkSsgToK/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwxxxdbVk2Zi5Ua9G0AjIkb5x93U89XnhaUsAp1CwqkdkI-SWN7qwFys_Ezfx0yUs5T/exec";
 const SECRET_KEY = "AMPANA_TETE_ACCESS_2024";
 
 export const AttendanceForm: React.FC = () => {
