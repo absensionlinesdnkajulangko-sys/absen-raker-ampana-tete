@@ -11,7 +11,7 @@ function cn(...inputs: ClassValue[]) {
 }
 
 // --- PENGATURAN LOKASI (Ganti lat & lng sesuai lokasi acara) ---
-const TARGET_COORDS = { lat: -1.2918965, lng: 122.0095223 }; 
+const TARGET_COORDS = { lat: -0.9072546, lng: 121.5809906 }; 
 const MAX_DISTANCE_METERS = 100; 
 
 const GAS_URL = "https://script.google.com/macros/s/AKfycbzxJ4iNcvcB99fI-JG8uAYM8w6UxMpm_I3nnTAlx-0ciIWq-zoAivoiwZepZxsf-7fW/exec";
