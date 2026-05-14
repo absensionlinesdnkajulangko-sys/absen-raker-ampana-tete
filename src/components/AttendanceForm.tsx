@@ -15,8 +15,8 @@ const TARGET_COORDS = { lat: -0.907224, lng: 121.585542 };
 const MAX_DISTANCE_METERS = 200; 
 
 // --- PENGATURAN WAKTU (WITA - UTC+8) ---
-const START_HOUR = 14;  // Contoh: Mulai jam 07:00 WITA
-const END_HOUR = 18;   // Contoh: Berakhir jam 17:00 WITA
+const START_HOUR = 1;  // Contoh: Mulai jam 07:00 WITA
+const END_HOUR = 23;   // Contoh: Berakhir jam 17:00 WITA
 
 const GAS_URL = "https://script.google.com/macros/s/AKfycbwOIvxQD5bB_jr3NRcEcJjrq0WC0iWsQ7m0e87KncZdEpHpT0obUHbUGlx3FkSsgToK/exec";
 const SECRET_KEY = "AMPANA_TETE_ACCESS_2024";
