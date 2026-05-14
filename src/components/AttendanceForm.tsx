@@ -122,9 +122,11 @@ export const AttendanceForm: React.FC = () => {
       className="space-y-8 bg-white/95 backdrop-blur-xl p-8 rounded-[2.5rem] border border-white shadow-2xl shadow-lime-900/5"
       onSubmit={handleSubmit}
     >
-        <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-100 rounded-full text-blue-700 text-[10px] font-bold uppercase tracking-wider">
-          <MapPin size={12} />
-          Area Terverifikasi (Radius {MAX_DISTANCE_METERS}m)
+        <div className="flex justify-center w-full mb-2">
+          <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-100 rounded-full text-blue-700 text-[10px] font-bold uppercase tracking-wider">
+            <MapPin size={12} />
+            Area Terverifikasi (Radius {MAX_DISTANCE_METERS}m)
+          </div>
         </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
