@@ -11,8 +11,8 @@ function cn(...inputs: ClassValue[]) {
 }
 
 // --- PENGATURAN LOKASI (Ganti lat & lng sesuai lokasi acara) ---
-const TARGET_COORDS = { lat: -0.907237, lng: 121.585591 }; 
-const MAX_DISTANCE_METERS = 100; 
+const TARGET_COORDS = { lat: -1.2919019, lng: 122.0120972 }; 
+const MAX_DISTANCE_METERS = 200; 
 
 const GAS_URL = "https://script.google.com/macros/s/AKfycbzxJ4iNcvcB99fI-JG8uAYM8w6UxMpm_I3nnTAlx-0ciIWq-zoAivoiwZepZxsf-7fW/exec";
 const SECRET_KEY = "AMPANA_TETE_ACCESS_2024";
