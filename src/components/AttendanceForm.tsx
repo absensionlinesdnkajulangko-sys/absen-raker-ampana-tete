@@ -15,7 +15,7 @@ const TARGET_COORDS = { lat: -1.2920550000000002, lng: 122.011995 };
 const MAX_DISTANCE_METERS = 200; 
 
 // --- PENGATURAN WAKTU (WITA - UTC+8) ---
-const START_HOUR = 14;  // Contoh: Mulai jam 07:00 WITA
+const START_HOUR = 8;  // Contoh: Mulai jam 07:00 WITA
 const END_HOUR = 18;   // Contoh: Berakhir jam 17:00 WITA
 
 const GAS_URL = "https://script.google.com/macros/s/AKfycbwsaEwCIHCJ2vy8j5FZqNfYRWhfCczdzcQN0gIaVDm8kURcSbL_TMCZe6Y_JEpuTe24/exec";
