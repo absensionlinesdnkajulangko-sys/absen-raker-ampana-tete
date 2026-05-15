@@ -14,9 +14,13 @@ function cn(...inputs: ClassValue[]) {
 const TARGET_COORDS = { lat: -1.2920550000000002, lng: 122.011995 }; 
 const MAX_DISTANCE_METERS = 200; 
 
-// --- PENGATURAN WAKTU (WITA - UTC+8) ---
-const START_HOUR = 8;  // Contoh: Mulai jam 07:00 WITA
-const END_HOUR = 18;   // Contoh: Berakhir jam 17:00 WITA
+// --- PENGATURAN TANGGAL DAN WAKTU (WITA - UTC+8) ---
+// Format Tanggal: YYYY-MM-DD
+const START_DATE = "2026-05-15"; // Contoh Tanggal Mulai Aplikasi Bisa Digunakan
+const END_DATE = "2026-05-17";   // Contoh Tanggal Terakhir Aplikasi Bisa Digunakan
+
+const START_HOUR = 8;  // Contoh: Mulai jam 08:00 WITA
+const END_HOUR = 18;   // Contoh: Berakhir jam 18:00 WITA
 
 const GAS_URL = "https://script.google.com/macros/s/AKfycbwsaEwCIHCJ2vy8j5FZqNfYRWhfCczdzcQN0gIaVDm8kURcSbL_TMCZe6Y_JEpuTe24/exec";
 const SECRET_KEY = "AMPANA_TETE_ACCESS_2024";
@@ -33,15 +37,44 @@ export const AttendanceForm: React.FC = () => {
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
 
-  // Fungsi Cek Waktu WITA
-  const isTimeValid = () => {
+  // Fungsi Cek Validitas Tanggal dan Waktu (WITA)
+  const isTimeAndDateValid = () => {
     // Ambil waktu UTC saat ini dan konversi ke WITA (UTC+8)
     const now = new Date();
     const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000);
     const witaTime = new Date(utcTime + (3600000 * 8));
-    const currentHour = witaTime.getHours();
+    
+    // 1. Validasi Rentang Tanggal
+    const start = new Date(`${START_DATE}T00:00:00+08:00`);
+    const end = new Date(`${END_DATE}T23:59:59+08:00`);
+    
+    if (witaTime < start || witaTime > end) {
+      return { 
+        valid: false, 
+        reason: `Aplikasi ini hanya dapat digunakan dari tanggal ${formatTanggalIndo(START_DATE)} sampai ${formatTanggalIndo(END_DATE)}.` 
+      };
+    }
 
-    return currentHour >= START_HOUR && currentHour < END_HOUR;
+    // 2. Validasi Rentang Jam
+    const currentHour = witaTime.getHours();
+    if (currentHour < START_HOUR || currentHour >= END_HOUR) {
+      return { 
+        valid: false, 
+        reason: `Maaf, absensi hanya aktif pukul ${START_HOUR.toString().padStart(2, '0')}:00 - ${END_HOUR.toString().padStart(2, '0')}:00 WITA.` 
+      };
+    }
+
+    return { valid: true, reason: '' };
+  };
+
+  // Helper untuk mempercantik format tanggal di pesan error
+  const formatTanggalIndo = (dateStr: string) => {
+    try {
+      const d = new Date(dateStr);
+      return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+    } catch {
+      return dateStr;
+    }
   };
   
   // Fungsi Hitung Jarak
@@ -66,9 +99,10 @@ export const AttendanceForm: React.FC = () => {
     setStatus('submitting');
     setErrorMsg('');
 
-    // 1. Verifikasi Waktu Pertama
-    if (!isTimeValid()) {
-      setErrorMsg(`Maaf, absensi akan aktif pukul ${START_HOUR.toString().padStart(2, '0')}:00 - ${END_HOUR}:00 WITA.`);
+    // 1. Verifikasi Tanggal & Waktu Pertama
+    const timeCheck = isTimeAndDateValid();
+    if (!timeCheck.valid) {
+      setErrorMsg(timeCheck.reason);
       setStatus('error');
       return;
     }
@@ -85,7 +119,7 @@ export const AttendanceForm: React.FC = () => {
       return;
     }
 
-// 2. Verifikasi Lokasi
+    // 2. Verifikasi Lokasi
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const userLat = position.coords.latitude;
