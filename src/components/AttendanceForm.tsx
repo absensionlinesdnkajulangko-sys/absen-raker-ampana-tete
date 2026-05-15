@@ -20,7 +20,7 @@ const START_DATE = "2026-05-15"; // Contoh Tanggal Mulai Aplikasi Bisa Digunakan
 const END_DATE = "2026-05-17";   // Contoh Tanggal Terakhir Aplikasi Bisa Digunakan
 
 const START_HOUR = 8;  // Contoh: Mulai jam 08:00 WITA
-const END_HOUR = 18;   // Contoh: Berakhir jam 18:00 WITA
+const END_HOUR = 22;   // Contoh: Berakhir jam 18:00 WITA
 
 const GAS_URL = "https://script.google.com/macros/s/AKfycbwsaEwCIHCJ2vy8j5FZqNfYRWhfCczdzcQN0gIaVDm8kURcSbL_TMCZe6Y_JEpuTe24/exec";
 const SECRET_KEY = "AMPANA_TETE_ACCESS_2024";
